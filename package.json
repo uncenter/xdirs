@@ -1,7 +1,7 @@
 {
 	"name": "xdirs",
 	"version": "0.1.0",
-	"description": "",
+	"description": "Get data, config, cache, log, and temp paths - cross-platform and respectful of user-defined XDG variables.",
 	"author": "uncenter <hi@uncenter.dev>",
 	"repository": {
 		"type": "git",
@@ -44,5 +44,5 @@
 		"unbuild": "^2.0.0",
 		"vitest": "^1.0.2"
 	},
-	"packageManager": "pnpm@8.10.0"
+	"packageManager": "pnpm@8.11.0"
 }
