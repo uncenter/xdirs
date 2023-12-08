@@ -1,6 +1,6 @@
 {
 	"name": "xdirs",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Get data, config, cache, log, and temp paths - cross-platform and respectful of user-defined XDG variables.",
 	"author": "uncenter <hi@uncenter.dev>",
 	"repository": {
