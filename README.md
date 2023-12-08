@@ -17,7 +17,12 @@ import xdirs from 'xdirs';
 const paths = xdirs('HelloWorld');
 ```
 
-## Preview
+Pass in the name of a directory (`HelloWorld` in the example above) to be used in the generated path strings. Returns an object with `data`, `config`, `cache`, `log`, and `temp` properties.
+
+> [!IMPORTANT]
+> Unlike this package's [predecessor](https://github.com/sindresorhus/env-paths), **`xdirs` does not append a "suffix" to the name of directories passed in**. You may still want to add a suffix (e.g. `-nodejs`) to avoid conflicting with existing directories.
+
+## Output
 
 ### macOS
 
@@ -59,4 +64,6 @@ const paths = xdirs('HelloWorld');
 
 ## License
 
-[MIT](LICENSE)
+This package is derived from [`env-paths`](https://github.com/sindresorhus/env-paths). See [COPYING.md](COPYING.md).
+
+[Licensed under the MIT License](LICENSE).
