@@ -58,26 +58,44 @@ export const xdg = (dir: string) => {
 	return result;
 };
 
-export default function xdirs(dir: string): {
+export type Options = {
+	macos: {
+		xdg: boolean;
+	};
+	windows: {
+		xdg: boolean;
+	};
+};
+
+export default function xdirs(
+	dir: string,
+	options?: Partial<Options>,
+): {
 	data: string;
 	config: string;
 	cache: string;
 	log: string;
 	temp: string;
 } {
-	if (typeof dir !== 'string') {
-		throw new TypeError(`Expected a string, got ${typeof dir}`);
-	}
+	const opts = {
+		macos: {
+			xdg: true,
+		},
+		windows: {
+			xdg: true,
+		},
+		...options,
+	} as Options;
 
 	switch (platform) {
 		case 'darwin': {
-			return { ...macos(dir), ...xdg(dir) };
+			return opts.macos.xdg ? { ...macos(dir), ...xdg(dir) } : macos(dir);
 		}
 		case 'win32': {
-			return { ...windows(dir), ...xdg(dir) };
+			return opts.windows.xdg ? { ...windows(dir), ...xdg(dir) } : windows(dir);
 		}
 		default: {
-			return linux(dir);
+			return { ...linux(dir), ...xdg(dir) };
 		}
 	}
 }
