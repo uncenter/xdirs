@@ -2,7 +2,7 @@ import os from 'node:os';
 
 import { expect, test } from 'vitest';
 
-import xdirs from '../src/index';
+import { dirs } from '../src/index';
 
 const USERNAME = os.userInfo().username;
 const TEST_DIR = 'MyApp';
@@ -20,7 +20,7 @@ if (process.platform === 'darwin') {
 		process.env['XDG_CACHE_HOME'] = '';
 		process.env['XDG_STATE_HOME'] = '';
 
-		const paths = xdirs(TEST_DIR);
+		const paths = dirs(TEST_DIR);
 
 		expect(paths.data).toBe(MACOS_DIRS.data);
 		expect(paths.config).toBe(MACOS_DIRS.config);
@@ -37,7 +37,7 @@ if (process.platform === 'darwin') {
 		process.env['XDG_CACHE_HOME'] = '/Users/USERNAME/.cache';
 		process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
 
-		const paths = xdirs(TEST_DIR);
+		const paths = dirs(TEST_DIR);
 
 		expect(paths.data).toBe(`/Users/USERNAME/.local/share/${TEST_DIR}`);
 		expect(paths.config).toBe(`/Users/USERNAME/.config/${TEST_DIR}`);
@@ -54,7 +54,7 @@ if (process.platform === 'darwin') {
 		process.env['XDG_CACHE_HOME'] = '/Users/USERNAME/.cache';
 		process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
 
-		const paths = xdirs(TEST_DIR, { macos: { xdg: false } });
+		const paths = dirs(TEST_DIR, { macos: { xdg: false } });
 
 		expect(paths.data).toBe(MACOS_DIRS.data);
 		expect(paths.config).toBe(MACOS_DIRS.config);

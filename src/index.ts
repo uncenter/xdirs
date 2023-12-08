@@ -67,7 +67,7 @@ export type Options = {
 	};
 };
 
-export default function xdirs(
+export function dirs(
 	dir: string,
 	options?: Partial<Options>,
 ): {

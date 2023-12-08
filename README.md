@@ -14,9 +14,9 @@ bun add xdirs
 ## Usage
 
 ```ts
-import xdirs from 'xdirs';
+import { dirs } from 'xdirs';
 
-const paths = xdirs('MyApp');
+const paths = dirs('MyApp');
 ```
 
 Pass in the name of a directory (`MyApp` in the example above) to be used in the generated path strings. Returns an object with `data`, `config`, `cache`, `log`, and `temp` properties.
@@ -36,7 +36,7 @@ process.env['XDG_DATA_HOME'] = '';
 process.env['XDG_CACHE_HOME'] = '';
 process.env['XDG_STATE_HOME'] = '';
 
-const paths = xdirs('MyApp');
+const paths = dirs('MyApp');
 // {
 //   data: "/Users/USERNAME/Library/Application Support/MyApp",
 //   config: "/Users/USERNAME/Library/Preferences/MyApp",
@@ -54,7 +54,7 @@ process.env['XDG_DATA_HOME'] = '/Users/USERNAME/.local/share';
 process.env['XDG_CACHE_HOME'] = '/Users/USERNAME/.cache';
 process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
 
-const paths = xdirs('MyApp');
+const paths = dirs('MyApp');
 // {
 //   data: "/Users/USERNAME/.local/share/MyApp",
 //   config: "/Users/USERNAME/.config/MyApp",
@@ -71,7 +71,7 @@ const paths = xdirs('MyApp');
 -   `xdg` (default: `true`): Enable/disable the usage of XDG directories on macOS:
 
     ```ts
-    xdirs('MyApp', { macos: { xdg: false } });
+    dirs('MyApp', { macos: { xdg: false } });
     ```
 
 ### `windows`
@@ -79,7 +79,7 @@ const paths = xdirs('MyApp');
 -   `xdg` (default: `true`): Enable/disable the usage of XDG directories on Windows.
 
     ```ts
-    xdirs('MyApp', { windows: { xdg: false } });
+    dirs('MyApp', { windows: { xdg: false } });
     ```
 
 ## License
