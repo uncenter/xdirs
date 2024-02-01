@@ -167,8 +167,6 @@ if (process.platform === 'win32')
 			expect(paths.config).toBe(WINDOWS_DIRS.config);
 			expect(paths.cache).toBe(WINDOWS_DIRS.cache);
 			expect(paths.log).toBe(WINDOWS_DIRS.log);
-			expect(
-				paths.temp.startsWith(`/var/folders/`) && paths.temp.endsWith(`/${TEST_DIR}`),
-			).toBe(true);
+			expect(paths.temp.endsWith(`\\${TEST_DIR}`)).toBe(true);
 		});
 	});
