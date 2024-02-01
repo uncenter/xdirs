@@ -8,10 +8,10 @@ const USERNAME = os.userInfo().username;
 const TEST_DIR = 'MyApp';
 
 const LINUX_DIRS = {
-	data: ``,
-	config: ``,
-	cache: ``,
-	log: ``,
+	data: `${USERNAME}/.local/share/${TEST_DIR}`,
+	config: `${USERNAME}/.config/${TEST_DIR}`,
+	cache: `${USERNAME}/.cache/${TEST_DIR}`,
+	log: `${USERNAME}/.local/state/${TEST_DIR}`,
 	temp: ``,
 };
 
