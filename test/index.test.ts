@@ -12,7 +12,6 @@ const LINUX_DIRS = {
 	config: `/home/${USERNAME}/.config/${TEST_DIR}`,
 	cache: `/home/${USERNAME}/.cache/${TEST_DIR}`,
 	log: `/home/${USERNAME}/.local/state/${TEST_DIR}`,
-	temp: ``,
 };
 
 const MACOS_DIRS = {
@@ -38,15 +37,14 @@ if (process.platform === 'linux')
 			process.env['XDG_STATE_HOME'] = '';
 
 			const paths = dirs(TEST_DIR);
-			console.log({ paths });
 
 			expect(paths.data).toBe(LINUX_DIRS.data);
 			expect(paths.config).toBe(LINUX_DIRS.config);
 			expect(paths.cache).toBe(LINUX_DIRS.cache);
 			expect(paths.log).toBe(LINUX_DIRS.log);
-			expect(
-				paths.temp.startsWith(`/var/folders/`) && paths.temp.endsWith(`/${TEST_DIR}`),
-			).toBe(true);
+			expect(paths.temp.startsWith(`/tmp/`) && paths.temp.endsWith(`/${TEST_DIR}`)).toBe(
+				true,
+			);
 		});
 
 		test('should respect user-defined XDG_*', () => {
@@ -56,15 +54,14 @@ if (process.platform === 'linux')
 			process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
 
 			const paths = dirs(TEST_DIR);
-			console.log({ paths });
 
 			expect(paths.data).toBe(`/Users/USERNAME/.local/share/${TEST_DIR}`);
 			expect(paths.config).toBe(`/Users/USERNAME/.config/${TEST_DIR}`);
 			expect(paths.cache).toBe(`/Users/USERNAME/.cache/${TEST_DIR}`);
 			expect(paths.log).toBe(`/Users/USERNAME/.local/state/${TEST_DIR}`);
-			expect(
-				paths.temp.startsWith(`/var/folders/`) && paths.temp.endsWith(`/${TEST_DIR}`),
-			).toBe(true);
+			expect(paths.temp.startsWith(`/tmp/`) && paths.temp.endsWith(`/${TEST_DIR}`)).toBe(
+				true,
+			);
 		});
 	});
 
