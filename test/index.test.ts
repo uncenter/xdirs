@@ -22,10 +22,10 @@ const MACOS_DIRS = {
 };
 
 const WINDOWS_DIRS = {
-	data: `C:\\Users/${USERNAME}/Library/Application Support/${TEST_DIR}`,
-	config: `/Users/${USERNAME}/Library/Preferences/${TEST_DIR}`,
-	cache: `/Users/${USERNAME}/Library/Caches/${TEST_DIR}`,
-	log: `/Users/${USERNAME}/Library/Logs/${TEST_DIR}`,
+	data: `C:\\Users\\${USERNAME}\\AppData\\Local\\${TEST_DIR}\\Data`,
+	config: `C:\\Users\\${USERNAME}\\AppData\\Roaming\\${TEST_DIR}\\Config`,
+	cache: `C:\\Users\\${USERNAME}\\AppData\\Local\\${TEST_DIR}\\Cache`,
+	log: `C:\\Users\\${USERNAME}\\AppData\\Local\\${TEST_DIR}\\Log`,
 };
 
 if (process.platform === 'linux')
@@ -135,9 +135,7 @@ if (process.platform === 'win32')
 			expect(paths.config).toBe(WINDOWS_DIRS.config);
 			expect(paths.cache).toBe(WINDOWS_DIRS.cache);
 			expect(paths.log).toBe(WINDOWS_DIRS.log);
-			expect(
-				paths.temp.startsWith(`/var/folders/`) && paths.temp.endsWith(`/${TEST_DIR}`),
-			).toBe(true);
+			expect(paths.temp.endsWith(`\\${TEST_DIR}`)).toBe(true);
 		});
 
 		test('should respect user-defined XDG_*', () => {
@@ -152,9 +150,7 @@ if (process.platform === 'win32')
 			expect(paths.config).toBe(`/Users/USERNAME/.config/${TEST_DIR}`);
 			expect(paths.cache).toBe(`/Users/USERNAME/.cache/${TEST_DIR}`);
 			expect(paths.log).toBe(`/Users/USERNAME/.local/state/${TEST_DIR}`);
-			expect(
-				paths.temp.startsWith(`/var/folders/`) && paths.temp.endsWith(`/${TEST_DIR}`),
-			).toBe(true);
+			expect(paths.temp.endsWith(`\\${TEST_DIR}`)).toBe(true);
 		});
 
 		test('should ignore user-defined XDG_* when disabled', () => {
