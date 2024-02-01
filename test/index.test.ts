@@ -4,6 +4,7 @@ import path from 'node:path';
 import { describe, expect, test } from 'vitest';
 
 import { dirs } from '../src/index';
+
 const USERNAME = os.userInfo().username;
 const TEST_DIR = 'MyApp';
 
