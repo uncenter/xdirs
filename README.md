@@ -19,16 +19,35 @@ import { dirs } from 'xdirs';
 const paths = dirs('MyApp');
 ```
 
+> [!IMPORTANT]
+> Unlike this package's predecessor [env-paths](https://github.com/sindresorhus/env-paths), **`xdirs` does not append a "suffix" to the name of directories passed in**. You may still want to add a suffix (e.g. `-nodejs`) to avoid conflicting with existing directories.
+
 Pass in the name of a directory (`MyApp` in the example above) to be used in the generated path strings. Returns an object with `data`, `config`, `cache`, `log`, and `temp` properties.
 
-> [!IMPORTANT]
-> Unlike this package's [predecessor](https://github.com/sindresorhus/env-paths), **`xdirs` does not append a "suffix" to the name of directories passed in**. You may still want to add a suffix (e.g. `-nodejs`) to avoid conflicting with existing directories.
+> [!CAUTION]
+> Paths are not checked/guaranteed to exist. Make sure to check before doing any operations to these directories.
 
 ## Output
 
-### macOS
+With `XDG_*` environment variables defined, the output paths respect those environment variables. The example below is what a user might define for macOS, and the same applies on Windows but the paths defined in the environment variables likely be different.
 
-**With*out* `XDG_*` environment variables defined:**
+```ts
+process.env['XDG_CONFIG_HOME'] = '/Users/USERNAME/.config';
+process.env['XDG_DATA_HOME'] = '/Users/USERNAME/.local/share';
+process.env['XDG_CACHE_HOME'] = '/Users/USERNAME/.cache';
+process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
+
+const paths = dirs('MyApp');
+// {
+//   data: "/Users/USERNAME/.local/share/MyApp",
+//   config: "/Users/USERNAME/.config/MyApp",
+//   cache: "/Users/USERNAME/.cache/MyApp",
+//   log: "/Users/USERNAME/.local/state/MyApp",
+//   temp: "/var/folders/t3/gp6fms8s4s351gc1vbtjmtrc0000gn/T/MyApp",
+// }
+```
+
+_Without_ `XDG_*` environment variables defined, paths default to OS-specific standards. On macOS, this looks like the following:
 
 ```ts
 process.env['XDG_CONFIG_HOME'] = '';
@@ -46,23 +65,25 @@ const paths = dirs('MyApp');
 // }
 ```
 
-**With `XDG_*` environment variables defined:**
+On Windows, that looks like this:
 
 ```ts
-process.env['XDG_CONFIG_HOME'] = '/Users/USERNAME/.config';
-process.env['XDG_DATA_HOME'] = '/Users/USERNAME/.local/share';
-process.env['XDG_CACHE_HOME'] = '/Users/USERNAME/.cache';
-process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
+process.env['XDG_CONFIG_HOME'] = '';
+process.env['XDG_DATA_HOME'] = '';
+process.env['XDG_CACHE_HOME'] = '';
+process.env['XDG_STATE_HOME'] = '';
 
 const paths = dirs('MyApp');
 // {
-//   data: "/Users/USERNAME/.local/share/MyApp",
-//   config: "/Users/USERNAME/.config/MyApp",
-//   cache: "/Users/USERNAME/.cache/MyApp",
-//   log: "/Users/USERNAME/.local/state/MyApp",
-//   temp: "/var/folders/t3/gp6fms8s4s351gc1vbtjmtrc0000gn/T/MyApp",
+//   data: 'C:\\Users\\USERNAME\\AppData\\Local\\MyApp\\Data',
+//   config: 'C:\\Users\\USERNAME\\AppData\\Roaming\\MyApp\\Config',
+//   cache: 'C:\\Users\\USERNAME\\AppData\\Local\\MyApp\\Cache',
+//   log: 'C:\\Users\\USERNAME\\AppData\\Local\\MyApp\\Log',
+//   temp: 'C:\\Users\\USERNAME\\AppData\\Local\\Temp\\MyApp'
 // }
 ```
+
+And since the actual standard for Linux is the [XDG Base Directory](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html) specification, `xdirs` first checks XDG environment variables (not configurable) and then defaults to the [default paths suggested in the standard](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html#variables).
 
 ## Configuration
 

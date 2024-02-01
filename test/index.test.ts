@@ -1,11 +1,20 @@
 import os from 'node:os';
+import path from 'node:path';
 
-import { expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import { dirs } from '../src/index';
 
 const USERNAME = os.userInfo().username;
 const TEST_DIR = 'MyApp';
+
+const LINUX_DIRS = {
+	data: `/home/${USERNAME}/.local/share/${TEST_DIR}`,
+	config: `/home/${USERNAME}/.config/${TEST_DIR}`,
+	cache: `/home/${USERNAME}/.cache/${TEST_DIR}`,
+	log: `/home/${USERNAME}/.local/state/${TEST_DIR}`,
+};
+
 const MACOS_DIRS = {
 	data: `/Users/${USERNAME}/Library/Application Support/${TEST_DIR}`,
 	config: `/Users/${USERNAME}/Library/Preferences/${TEST_DIR}`,
@@ -13,55 +22,152 @@ const MACOS_DIRS = {
 	log: `/Users/${USERNAME}/Library/Logs/${TEST_DIR}`,
 };
 
-if (process.platform === 'darwin') {
-	test('should use macOS specification', () => {
-		process.env['XDG_DATA_HOME'] = '';
-		process.env['XDG_CONFIG_HOME'] = '';
-		process.env['XDG_CACHE_HOME'] = '';
-		process.env['XDG_STATE_HOME'] = '';
+const WINDOWS_DIRS = {
+	data: `C:\\Users\\${USERNAME}\\AppData\\Local\\${TEST_DIR}\\Data`,
+	config: `C:\\Users\\${USERNAME}\\AppData\\Roaming\\${TEST_DIR}\\Config`,
+	cache: `C:\\Users\\${USERNAME}\\AppData\\Local\\${TEST_DIR}\\Cache`,
+	log: `C:\\Users\\${USERNAME}\\AppData\\Local\\${TEST_DIR}\\Log`,
+};
 
-		const paths = dirs(TEST_DIR);
+if (process.platform === 'linux')
+	describe('linux', () => {
+		test('should use XDG specification', () => {
+			process.env['XDG_DATA_HOME'] = '';
+			process.env['XDG_CONFIG_HOME'] = '';
+			process.env['XDG_CACHE_HOME'] = '';
+			process.env['XDG_STATE_HOME'] = '';
 
-		expect(paths.data).toBe(MACOS_DIRS.data);
-		expect(paths.config).toBe(MACOS_DIRS.config);
-		expect(paths.cache).toBe(MACOS_DIRS.cache);
-		expect(paths.log).toBe(MACOS_DIRS.log);
-		expect(paths.temp.startsWith(`/var/folders/`) && paths.temp.endsWith(`/${TEST_DIR}`)).toBe(
-			true,
-		);
+			const paths = dirs(TEST_DIR);
+
+			expect(paths.data).toBe(LINUX_DIRS.data);
+			expect(paths.config).toBe(LINUX_DIRS.config);
+			expect(paths.cache).toBe(LINUX_DIRS.cache);
+			expect(paths.log).toBe(LINUX_DIRS.log);
+			expect(paths.temp.startsWith(`/tmp/`) && paths.temp.endsWith(`/${TEST_DIR}`)).toBe(
+				true,
+			);
+		});
+
+		test('should respect user-defined XDG_*', () => {
+			process.env['XDG_DATA_HOME'] = '/Users/USERNAME/.local/share';
+			process.env['XDG_CONFIG_HOME'] = '/Users/USERNAME/.config';
+			process.env['XDG_CACHE_HOME'] = '/Users/USERNAME/.cache';
+			process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
+
+			const paths = dirs(TEST_DIR);
+
+			expect(paths.data).toBe(`/Users/USERNAME/.local/share/${TEST_DIR}`);
+			expect(paths.config).toBe(`/Users/USERNAME/.config/${TEST_DIR}`);
+			expect(paths.cache).toBe(`/Users/USERNAME/.cache/${TEST_DIR}`);
+			expect(paths.log).toBe(`/Users/USERNAME/.local/state/${TEST_DIR}`);
+			expect(paths.temp.startsWith(`/tmp/`) && paths.temp.endsWith(`/${TEST_DIR}`)).toBe(
+				true,
+			);
+		});
 	});
 
-	test('should respect user-defined XDG_*', () => {
-		process.env['XDG_DATA_HOME'] = '/Users/USERNAME/.local/share';
-		process.env['XDG_CONFIG_HOME'] = '/Users/USERNAME/.config';
-		process.env['XDG_CACHE_HOME'] = '/Users/USERNAME/.cache';
-		process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
+if (process.platform === 'darwin')
+	describe('macos', () => {
+		test('should use macOS specification', () => {
+			process.env['XDG_DATA_HOME'] = '';
+			process.env['XDG_CONFIG_HOME'] = '';
+			process.env['XDG_CACHE_HOME'] = '';
+			process.env['XDG_STATE_HOME'] = '';
 
-		const paths = dirs(TEST_DIR);
+			const paths = dirs(TEST_DIR);
 
-		expect(paths.data).toBe(`/Users/USERNAME/.local/share/${TEST_DIR}`);
-		expect(paths.config).toBe(`/Users/USERNAME/.config/${TEST_DIR}`);
-		expect(paths.cache).toBe(`/Users/USERNAME/.cache/${TEST_DIR}`);
-		expect(paths.log).toBe(`/Users/USERNAME/.local/state/${TEST_DIR}`);
-		expect(paths.temp.startsWith(`/var/folders/`) && paths.temp.endsWith(`/${TEST_DIR}`)).toBe(
-			true,
-		);
+			expect(paths.data).toBe(MACOS_DIRS.data);
+			expect(paths.config).toBe(MACOS_DIRS.config);
+			expect(paths.cache).toBe(MACOS_DIRS.cache);
+			expect(paths.log).toBe(MACOS_DIRS.log);
+			expect(
+				paths.temp.startsWith(`/var/folders/`) && paths.temp.endsWith(`/${TEST_DIR}`),
+			).toBe(true);
+		});
+
+		test('should respect user-defined XDG_*', () => {
+			process.env['XDG_DATA_HOME'] = '/Users/USERNAME/.local/share';
+			process.env['XDG_CONFIG_HOME'] = '/Users/USERNAME/.config';
+			process.env['XDG_CACHE_HOME'] = '/Users/USERNAME/.cache';
+			process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
+
+			const paths = dirs(TEST_DIR);
+
+			expect(paths.data).toBe(`/Users/USERNAME/.local/share/${TEST_DIR}`);
+			expect(paths.config).toBe(`/Users/USERNAME/.config/${TEST_DIR}`);
+			expect(paths.cache).toBe(`/Users/USERNAME/.cache/${TEST_DIR}`);
+			expect(paths.log).toBe(`/Users/USERNAME/.local/state/${TEST_DIR}`);
+			expect(
+				paths.temp.startsWith(`/var/folders/`) && paths.temp.endsWith(`/${TEST_DIR}`),
+			).toBe(true);
+		});
+
+		test('should ignore user-defined XDG_* when disabled', () => {
+			process.env['XDG_CONFIG_HOME'] = '/Users/USERNAME/.config';
+			process.env['XDG_DATA_HOME'] = '/Users/USERNAME/.local/share';
+			process.env['XDG_CACHE_HOME'] = '/Users/USERNAME/.cache';
+			process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
+
+			const paths = dirs(TEST_DIR, { macos: { xdg: false } });
+
+			expect(paths.data).toBe(MACOS_DIRS.data);
+			expect(paths.config).toBe(MACOS_DIRS.config);
+			expect(paths.cache).toBe(MACOS_DIRS.cache);
+			expect(paths.log).toBe(MACOS_DIRS.log);
+			expect(
+				paths.temp.startsWith(`/var/folders/`) && paths.temp.endsWith(`/${TEST_DIR}`),
+			).toBe(true);
+		});
 	});
 
-	test('should ignore user-defined XDG_* when disabled', () => {
-		process.env['XDG_CONFIG_HOME'] = '/Users/USERNAME/.config';
-		process.env['XDG_DATA_HOME'] = '/Users/USERNAME/.local/share';
-		process.env['XDG_CACHE_HOME'] = '/Users/USERNAME/.cache';
-		process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
+if (process.platform === 'win32')
+	describe('windows', () => {
+		test('should use Windows "specification"', () => {
+			process.env['XDG_DATA_HOME'] = '';
+			process.env['XDG_CONFIG_HOME'] = '';
+			process.env['XDG_CACHE_HOME'] = '';
+			process.env['XDG_STATE_HOME'] = '';
 
-		const paths = dirs(TEST_DIR, { macos: { xdg: false } });
+			const paths = dirs(TEST_DIR);
 
-		expect(paths.data).toBe(MACOS_DIRS.data);
-		expect(paths.config).toBe(MACOS_DIRS.config);
-		expect(paths.cache).toBe(MACOS_DIRS.cache);
-		expect(paths.log).toBe(MACOS_DIRS.log);
-		expect(paths.temp.startsWith(`/var/folders/`) && paths.temp.endsWith(`/${TEST_DIR}`)).toBe(
-			true,
-		);
+			expect(paths.data).toBe(WINDOWS_DIRS.data);
+			expect(paths.config).toBe(WINDOWS_DIRS.config);
+			expect(paths.cache).toBe(WINDOWS_DIRS.cache);
+			expect(paths.log).toBe(WINDOWS_DIRS.log);
+			expect(paths.temp.endsWith(`\\${TEST_DIR}`)).toBe(true);
+		});
+
+		test('should respect user-defined XDG_*', () => {
+			process.env['XDG_DATA_HOME'] = '/Users/USERNAME/.local/share';
+			process.env['XDG_CONFIG_HOME'] = '/Users/USERNAME/.config';
+			process.env['XDG_CACHE_HOME'] = '/Users/USERNAME/.cache';
+			process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
+
+			const paths = dirs(TEST_DIR);
+
+			expect(paths.data).toBe(
+				path.win32.normalize(`/Users/USERNAME/.local/share/${TEST_DIR}`),
+			);
+			expect(paths.config).toBe(path.win32.normalize(`/Users/USERNAME/.config/${TEST_DIR}`));
+			expect(paths.cache).toBe(path.win32.normalize(`/Users/USERNAME/.cache/${TEST_DIR}`));
+			expect(paths.log).toBe(
+				path.win32.normalize(`/Users/USERNAME/.local/state/${TEST_DIR}`),
+			);
+			expect(paths.temp.endsWith(`\\${TEST_DIR}`)).toBe(true);
+		});
+
+		test('should ignore user-defined XDG_* when disabled', () => {
+			process.env['XDG_CONFIG_HOME'] = '/Users/USERNAME/.config';
+			process.env['XDG_DATA_HOME'] = '/Users/USERNAME/.local/share';
+			process.env['XDG_CACHE_HOME'] = '/Users/USERNAME/.cache';
+			process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
+
+			const paths = dirs(TEST_DIR, { windows: { xdg: false } });
+
+			expect(paths.data).toBe(WINDOWS_DIRS.data);
+			expect(paths.config).toBe(WINDOWS_DIRS.config);
+			expect(paths.cache).toBe(WINDOWS_DIRS.cache);
+			expect(paths.log).toBe(WINDOWS_DIRS.log);
+			expect(paths.temp.endsWith(`\\${TEST_DIR}`)).toBe(true);
+		});
 	});
-}
