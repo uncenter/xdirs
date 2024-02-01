@@ -22,7 +22,7 @@ const MACOS_DIRS = {
 };
 
 const WINDOWS_DIRS = {
-	data: `/Users/${USERNAME}/Library/Application Support/${TEST_DIR}`,
+	data: `C:\\Users/${USERNAME}/Library/Application Support/${TEST_DIR}`,
 	config: `/Users/${USERNAME}/Library/Preferences/${TEST_DIR}`,
 	cache: `/Users/${USERNAME}/Library/Caches/${TEST_DIR}`,
 	log: `/Users/${USERNAME}/Library/Logs/${TEST_DIR}`,
@@ -128,6 +128,8 @@ if (process.platform === 'win32')
 			process.env['XDG_STATE_HOME'] = '';
 
 			const paths = dirs(TEST_DIR);
+
+			console.log({ paths });
 
 			expect(paths.data).toBe(WINDOWS_DIRS.data);
 			expect(paths.config).toBe(WINDOWS_DIRS.config);
