@@ -29,7 +29,7 @@ Pass in the name of a directory (`MyApp` in the example above) to be used in the
 
 ## Output
 
-With `XDG_*` environment variables defined, the output would look like this. The same applies on Windows, but the paths defined in the environment variables would presumably different for the Windows file system.
+With `XDG_*` environment variables defined, the output paths respect those environment variables. The example below is what a user might define for macOS, and the same applies on Windows but the paths defined in the environment variables likely be different.
 
 ```ts
 process.env['XDG_CONFIG_HOME'] = '/Users/USERNAME/.config';
@@ -75,11 +75,11 @@ process.env['XDG_STATE_HOME'] = '';
 
 const paths = dirs('MyApp');
 // {
-//   data: "",
-//   config: "",
-//   cache: "",
-//   log: "",
-//   temp: "",
+//   data: 'C:\\Users\\USERNAME\\AppData\\Local\\MyApp\\Data',
+//   config: 'C:\\Users\\USERNAME\\AppData\\Roaming\\MyApp\\Config',
+//   cache: 'C:\\Users\\USERNAME\\AppData\\Local\\MyApp\\Cache',
+//   log: 'C:\\Users\\USERNAME\\AppData\\Local\\MyApp\\Log',
+//   temp: 'C:\\Users\\USERNAME\\AppData\\Local\\Temp\\MyApp'
 // }
 ```
 
