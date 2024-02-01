@@ -38,7 +38,6 @@ if (process.platform === 'linux')
 			process.env['XDG_STATE_HOME'] = '';
 
 			const paths = dirs(TEST_DIR);
-			console.log({ paths });
 
 			expect(paths.data).toBe(LINUX_DIRS.data);
 			expect(paths.config).toBe(LINUX_DIRS.config);
@@ -93,7 +92,6 @@ if (process.platform === 'darwin')
 			process.env['XDG_STATE_HOME'] = '/Users/USERNAME/.local/state';
 
 			const paths = dirs(TEST_DIR);
-			console.log({ paths });
 
 			expect(paths.data).toBe(`/Users/USERNAME/.local/share/${TEST_DIR}`);
 			expect(paths.config).toBe(`/Users/USERNAME/.config/${TEST_DIR}`);
@@ -131,7 +129,6 @@ if (process.platform === 'win32')
 			process.env['XDG_STATE_HOME'] = '';
 
 			const paths = dirs(TEST_DIR);
-			console.log({ paths });
 
 			expect(paths.data).toBe(WINDOWS_DIRS.data);
 			expect(paths.config).toBe(WINDOWS_DIRS.config);
