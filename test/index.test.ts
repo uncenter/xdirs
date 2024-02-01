@@ -1,9 +1,9 @@
 import os from 'node:os';
+import path from 'node:path';
 
 import { describe, expect, test } from 'vitest';
 
 import { dirs } from '../src/index';
-
 const USERNAME = os.userInfo().username;
 const TEST_DIR = 'MyApp';
 
@@ -129,8 +129,6 @@ if (process.platform === 'win32')
 
 			const paths = dirs(TEST_DIR);
 
-			console.log({ paths });
-
 			expect(paths.data).toBe(WINDOWS_DIRS.data);
 			expect(paths.config).toBe(WINDOWS_DIRS.config);
 			expect(paths.cache).toBe(WINDOWS_DIRS.cache);
@@ -146,10 +144,14 @@ if (process.platform === 'win32')
 
 			const paths = dirs(TEST_DIR);
 
-			expect(paths.data).toBe(`/Users/USERNAME/.local/share/${TEST_DIR}`);
-			expect(paths.config).toBe(`/Users/USERNAME/.config/${TEST_DIR}`);
-			expect(paths.cache).toBe(`/Users/USERNAME/.cache/${TEST_DIR}`);
-			expect(paths.log).toBe(`/Users/USERNAME/.local/state/${TEST_DIR}`);
+			expect(paths.data).toBe(
+				path.win32.normalize(`/Users/USERNAME/.local/share/${TEST_DIR}`),
+			);
+			expect(paths.config).toBe(path.win32.normalize(`/Users/USERNAME/.config/${TEST_DIR}`));
+			expect(paths.cache).toBe(path.win32.normalize(`/Users/USERNAME/.cache/${TEST_DIR}`));
+			expect(paths.log).toBe(
+				path.win32.normalize(`/Users/USERNAME/.local/state/${TEST_DIR}`),
+			);
 			expect(paths.temp.endsWith(`\\${TEST_DIR}`)).toBe(true);
 		});
 
