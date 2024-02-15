@@ -3,11 +3,9 @@
 	"version": "0.2.0",
 	"description": "Get data, config, cache, log, and temp paths - cross-platform and respectful of user-defined XDG variables.",
 	"author": "uncenter <hi@uncenter.dev>",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/uncenter/xdirs.git"
-	},
+	"repository": "uncenter/xdirs",
 	"license": "MIT",
+	"type": "module",
 	"files": [
 		"README.md",
 		"LICENSE",
@@ -22,23 +20,17 @@
 			"require": "./dist/index.cjs"
 		}
 	},
-	"type": "module",
 	"scripts": {
 		"build": "unbuild",
 		"test": "vitest",
 		"lint": "tsc && eslint .",
-		"autofix": "eslint --fix .",
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
 		"@types/node": "^20.10.4",
-		"@typescript-eslint/eslint-plugin": "^6.13.2",
-		"@typescript-eslint/parser": "^6.13.2",
+		"@uncenter/eslint-config": "^0.3.0",
+		"@uncenter/prettier-config": "^0.1.0",
 		"eslint": "^8.55.0",
-		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-import": "^2.29.0",
-		"eslint-plugin-unicorn": "^51.0.1",
-		"eslint-plugin-vitest": "^0.3.10",
 		"prettier": "^3.1.0",
 		"typescript": "^5.3.3",
 		"unbuild": "^2.0.0",
